@@ -70,7 +70,7 @@ Make_response Player_make_trump(const Player *player_ptr, const Card *upcard, Pl
       if (player_ptr == dealer)
       {
          resp.orderup = true;
-         resp.trump = upcard->suit;
+         resp.trump = Suit_next(upcard->suit);
          return resp;
       }
       Suit nextSuit = Suit_next(upcard->suit);
