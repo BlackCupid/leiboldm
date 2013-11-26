@@ -62,7 +62,7 @@ static void init_game(int argc, char** argv, Game* game)
    if (argc != 4) assert(0);
    game->bankroll = atoi(argv[1]);
    game->maxHands = atoi(argv[2]);
-   game->hand = 0;
+   game->hand = 1;
    game->deck = Deck();
    game->player = player_factory(argv[3]); 
 }
@@ -70,7 +70,7 @@ static void init_game(int argc, char** argv, Game* game)
 static void play_game(Game *game)
 {
    game_shuffle(game);
-   while (game->bankroll >= MINIMUM && game->hand < game->maxHands)
+   while (game->bankroll >= MINIMUM && game->hand <= game->maxHands)
    {
       cout << "Hand " << game->hand << " bankroll " << game->bankroll << endl;
       if (game->deck.cards_remaining() < 20) game_shuffle(game);
@@ -81,9 +81,11 @@ static void play_game(Game *game)
       int payout = game_play_hand(game, wager, upCard, holeCard);
       game->bankroll = game->bankroll + payout;
       game->hand += 1;
+      game->pHand.discard_all();
+      game->dHand.discard_all();
    }
    cout << "Player has " << game->bankroll << " after "
-        << game->hand << "hands\n";
+        << game->hand - 1 << " hands\n";
 }
 
 static int game_play_hand(Game *game, int wager, Card upCard, Card holeCard)
@@ -92,13 +94,14 @@ static int game_play_hand(Game *game, int wager, Card upCard, Card holeCard)
        cout << "Player dealt natural 21\n";
        return (wager * 3) / 2;
     }
-    bool stay = game->player->draw(upCard, game->pHand);
-    while(!stay){
+    bool hit = game->player->draw(upCard, game->pHand);
+    while(hit){
        Card c = game->deck.deal();
        game->pHand.add_card(c);
        game->player->expose(c);
        cout << "Player dealt " << c << endl;
-       stay = game->player->draw(upCard, game->pHand);
+       hit = game->player->draw(upCard, game->pHand);
+       if (game->pHand.hand_value() > 21) break;
     }   
     cout << "Player's total is " << game->pHand.hand_value() << endl;
     if (game->pHand.hand_value() > 21){
@@ -115,7 +118,7 @@ static int game_play_hand(Game *game, int wager, Card upCard, Card holeCard)
     }
     cout << "Dealer's total is " << game->dHand.hand_value() << endl;
     if (game->dHand.hand_value() > 21){
-       cout << "Dealer bust \n";
+       cout << "Dealer busts\n";
        return wager;
     }
     else if (game->dHand.hand_value() > game->pHand.hand_value()){

@@ -1,0 +1,16 @@
+Player_test00: Tests bet function.  Player should bet minimum when count is
+               less than 2.  Player should bet 2*minimum when count is
+               greater than 2. 
+
+Player_test01: Tests bet function with various bankrolls/minimums.  Player should
+               never bet more than the bankroll or less than the minimum.
+
+Player_test02: Tests draw function.  Tests soft count conditions.
+
+Player_test03: Tests draw function hard count conditions.
+
+Player_test04: Tests expose function with every card to make sure it modifies
+               count appropriately.
+
+Player_test05: Tests shuffled().  Count should reset to 0 when shuffled() is
+               called.

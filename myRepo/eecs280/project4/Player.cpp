@@ -132,15 +132,39 @@ int Competitor::bet(unsigned int bankroll, unsigned int minimum)
 
 bool Competitor::draw(Card dealer, const Hand &player)
 {
-   if (player.hand_value() < 12) return true;
-   else return false;
+   int handValue = player.hand_value();
+   if (player.hand_is_soft()){
+      if (handValue <= 17) return true;
+      else if (handValue == 18){
+         if (dealer.get_rank() == Card::TWO ||
+             dealer.get_rank() == Card::SEVEN ||
+             dealer.get_rank() == Card::EIGHT) return false;
+         else return true;
+      }
+      else return false;
+   }
+   else {
+      if (handValue <= 11) return true;
+      else if (handValue == 12){
+         if (count > 2) return false;
+         else if (dealer.get_rank() == Card::FOUR ||
+             dealer.get_rank() == Card::FIVE ||
+             dealer.get_rank() == Card::SIX) return false;
+         else return true;
+      }
+      else if (handValue >= 13 && handValue <= 16){
+         if (static_cast<int>(dealer.get_rank()) <= 4 || count > 0) return false;
+         else return true;
+      }
+      else return false;
+   }
 }
 
 void Competitor::expose(Card c)
 {
    int r = static_cast<int>(c.get_rank());
    if (r < 5) count += 1;
-   else if (r > 7) count -= 1; 
+   else if (r > 7 && r != 12) count -= 1;
 }
 
 void Competitor::shuffled()
