@@ -1,6 +1,9 @@
 CC     := g++
 CFLAGS := -Wall -Werror -pedantic -O1
 
+submit : Card.cpp Deck.cpp Player.cpp Hand.cpp blackjack.cpp Deck_test.overview Deck_test[0-9][0-9].cpp Player_test.overview Player_test[0-9][0-9].cpp
+	/afs/umich.edu/class/eecs280/submit280 4 Card.cpp Deck.cpp Player.cpp Hand.cpp blackjack.cpp Deck_test.overview Deck_test[0-9][0-9].cpp Player_test.overview Player_test[0-9][0-9].cpp
+
 Card_test00 : Card_test00.cpp Card.cpp
 	$(CC) $(CFLAGS) Card_test00.cpp Card.cpp -o Card_test00
 
