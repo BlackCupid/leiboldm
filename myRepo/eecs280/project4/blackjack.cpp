@@ -15,7 +15,7 @@ struct Game {
    Hand pHand, dHand; //pHand is the player's hand, dHand is the dealer's hand
    int bankroll;
    int maxHands;
-   int hand; // number of the current hand
+   int hand; // counts number of hands played
    Deck deck;
 };
 const int MINIMUM = 5;
@@ -25,11 +25,6 @@ const int MINIMUM = 5;
 //MODIFIES: game
 //EFFECTS: initializes a game with the inputs specified in argv
 static void init_game(int argc, char** argv, Game* game);
-
-//REQUIRES: game has been initialized
-//MODIFIES: game, stdout
-//EFFECTS: plays an entire game of blackjack
-static void play_game(Game *game);
 
 //REQUIRES: game has been initialized
 //MODIFIES: game, stdout
@@ -53,7 +48,25 @@ int main(int argc, char** argv)
 {
    Game game;
    init_game(argc, argv, &game);
-   play_game(&game);
+   game_shuffle(&game);
+   while (game.bankroll >= MINIMUM && game.hand <= game.maxHands)
+   {
+      cout << "Hand " << game.hand << " bankroll " << game.bankroll << endl;
+      if (game.deck.cards_remaining() < 20) game_shuffle(&game);
+      int wager = game.player->bet(game.bankroll, MINIMUM);
+      cout << "Player bets " << wager << endl;
+      Card upCard;
+      Card holeCard = game_deal(&game, &upCard);
+      int payout = game_play_hand(&game, wager, upCard, holeCard);
+      game.bankroll = game.bankroll + payout;
+      game.hand += 1;
+      game.pHand.discard_all();
+      game.dHand.discard_all();
+   }
+   if (game.bankroll < 0) game.bankroll = 0; // this shouldn't ever happen
+   cout << "Player has " << game.bankroll << " after "
+        << game.hand - 1 << " hands\n";
+
    return 0;   
 }
 
@@ -67,26 +80,6 @@ static void init_game(int argc, char** argv, Game* game)
    game->player = player_factory(argv[3]); 
 }
 
-static void play_game(Game *game)
-{
-   game_shuffle(game);
-   while (game->bankroll >= MINIMUM && game->hand <= game->maxHands)
-   {
-      cout << "Hand " << game->hand << " bankroll " << game->bankroll << endl;
-      if (game->deck.cards_remaining() < 20) game_shuffle(game);
-      int wager = game->player->bet(game->bankroll, MINIMUM);
-      cout << "Player bets " << wager << endl;
-      Card upCard;
-      Card holeCard = game_deal(game, &upCard);
-      int payout = game_play_hand(game, wager, upCard, holeCard);
-      game->bankroll = game->bankroll + payout;
-      game->hand += 1;
-      game->pHand.discard_all();
-      game->dHand.discard_all();
-   }
-   cout << "Player has " << game->bankroll << " after "
-        << game->hand - 1 << " hands\n";
-}
 
 static int game_play_hand(Game *game, int wager, Card upCard, Card holeCard)
 {

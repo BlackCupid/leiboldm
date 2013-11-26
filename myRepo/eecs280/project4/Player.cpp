@@ -162,7 +162,7 @@ bool Competitor::draw(Card dealer, const Hand &player)
 
 void Competitor::expose(Card c)
 {
-   int r = static_cast<int>(c.get_rank());
+   int r = static_cast<int>(c.get_rank()); /// r = 0 = TWO, r = 1 = THREE, etc
    if (r < 5) count += 1;
    else if (r > 7 && r != 12) count -= 1;
 }

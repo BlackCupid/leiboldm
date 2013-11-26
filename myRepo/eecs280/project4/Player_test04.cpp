@@ -64,8 +64,4 @@ int main()
     p->expose(nine);
     assert(p->bet(bankroll, minimum) == minimum*2);
     return 0;
-      
-
-
-    return 0;
 }
