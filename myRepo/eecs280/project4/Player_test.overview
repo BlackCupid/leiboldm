@@ -9,7 +9,7 @@ Player_test02: Tests draw function.  Tests soft count conditions.
 
 Player_test03: Tests draw function hard count conditions.
 
-Player_test04: Tests expose function with every card to make sure it modifies
+Player_test04: Tests expose function with every rank to make sure it modifies
                count appropriately.
 
 Player_test05: Tests shuffled().  Count should reset to 0 when shuffled() is

@@ -57,6 +57,5 @@ int main()
     assert(!p->draw(ten, pHand));
     assert(!p->draw(four, pHand));
     assert(!p->draw(five, pHand));
-    return 0;
-    
+    return 0;    
 }

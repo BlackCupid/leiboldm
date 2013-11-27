@@ -41,34 +41,6 @@ void Hand::add_card(Card c)
       }
    }
 }
-/*
-   switch (c.get_rank())
-   {
-      case (Card::TWO) : value += 2; break;
-      case (Card::THREE) : value += 3; break;
-      case (Card::FOUR) : value += 4; break;
-      case (Card::FIVE) : value += 5; break;
-      case (Card::SIX) : value += 6; break;
-      case (Card::SEVEN) :value += 7; break;
-      case (Card::EIGHT) : value += 8; break;
-      case (Card::NINE) : value += 9; break;
-      case (Card::TEN) : value += 10; break;
-      case (Card::JACK) : value += 10; break;
-      case (Card::QUEEN) : value += 10; break;
-      case (Card::KING) : value += 10; break;
-      case (Card::ACE) :
-         if (value > 10){
-            value += 1;
-         }
-         else {
-            value += 11;
-            soft = true;
-         }
-         break;
-      default: assert(0);
-   }
-*/
-
 
 int Hand::hand_value() const
 {

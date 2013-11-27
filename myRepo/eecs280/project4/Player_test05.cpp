@@ -9,6 +9,7 @@ int main()
     Hand pHand;
 
     Card two = Card(Card::TWO, Card::SPADES);
+    Card ten = Card(Card::TEN, Card::SPADES);
 
     int minimum = 5;
     int bankroll = 100;
@@ -16,6 +17,20 @@ int main()
     p->expose(two);
     p->expose(two);
     assert(p->bet(bankroll, minimum) == minimum*2);
+    p->shuffled();
+    assert(p->bet(bankroll, minimum) == minimum);
+    for (int i = 0; i < 1000; i++)
+    {
+        p->expose(two);
+    }
+    assert(p->bet(bankroll, minimum) == minimum*2);
+    p->shuffled();
+    assert(p->bet(bankroll, minimum) == minimum);
+    for (int i = 0; i < 1000; i++)
+    {
+        p->expose(ten);
+    }
+    assert(p->bet(bankroll, minimum) == minimum);
     p->shuffled();
     assert(p->bet(bankroll, minimum) == minimum);
 
