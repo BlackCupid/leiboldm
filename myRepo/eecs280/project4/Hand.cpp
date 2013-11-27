@@ -27,9 +27,7 @@ void Hand::add_card(Card c)
          soft = false;
          // value remains unchanged because we add 10 and subtract 10
       }
-      else {
-         value = value + 10;
-      }
+      else value = value + 10;
    }
    else { // card is ace
       if (value + 11 > 21){

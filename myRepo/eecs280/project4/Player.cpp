@@ -19,7 +19,7 @@ class Simple_player : public Player {
 
 int Simple_player::bet(unsigned int bankroll, unsigned int minimum)
 {
-   assert(bankroll > minimum);
+   assert(bankroll >= minimum);
    return minimum;
 }
 
@@ -185,7 +185,7 @@ Player * player_factory(const char * s)
    if (strcmp(s, "simple") == 0) return &simple;
    if (strcmp(s, "counting") == 0) return &counting;
    if (strcmp(s, "competitor") == 0) return &competitor;
-   assert(0);
+   else assert(0);
 }
 
 

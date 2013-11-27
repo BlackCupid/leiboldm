@@ -22,7 +22,7 @@ std::ostream& operator<< (std::ostream& os, const Card& c)
    os << " of ";
    const int NUMSUITS = 4;
    Card::Suit suits[NUMSUITS] = {Card::SPADES, Card::HEARTS,
-                                Card::CLUBS, Card::DIAMONDS};
+                                 Card::CLUBS, Card::DIAMONDS};
    string suitStrings[NUMSUITS] = {"Spades", "Hearts", "Clubs", "Diamonds"};
    for (int i = 0; i < NUMSUITS; i++){
       if (c.get_suit() == suits[i]){

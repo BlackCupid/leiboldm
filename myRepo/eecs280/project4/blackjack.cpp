@@ -66,7 +66,6 @@ int main(int argc, char** argv)
    if (game.bankroll < 0) game.bankroll = 0; // this shouldn't ever happen
    cout << "Player has " << game.bankroll << " after "
         << game.hand - 1 << " hands\n";
-
    return 0;   
 }
 
@@ -158,6 +157,7 @@ static Card game_deal(Game *game, Card* upCard)
    game->player->expose(c);
    cout << "Player dealt " << c << endl;
 
+   // hole card
    c = game->deck.deal();
    game->dHand.add_card(c);
    return c;

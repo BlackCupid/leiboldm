@@ -30,8 +30,10 @@ int main()
     Card four = Card(Card::FOUR, Card::SPADES);
     Card five = Card(Card::FIVE, Card::SPADES);
     Card six = Card(Card::SIX, Card::SPADES);
-    //Card seven = Card(Card::SEVEN, Card::SPADES);
+    Card seven = Card(Card::SEVEN, Card::SPADES);
+    Card eight = Card(Card::EIGHT, Card::SPADES);
     Card nine = Card(Card::NINE, Card::SPADES);
+    Card ten = Card(Card::TEN, Card::SPADES);
     Card ace = Card(Card::ACE, Card::SPADES);
      
     // Always hit if value <= 11
@@ -56,9 +58,28 @@ int main()
     assert(!p->draw(six, pHand));
     assert(p->draw(nine, pHand));
     assert(p->draw(ace, pHand));
+    pHand.discard_all();
+    pHand.add_card(ace);
+    pHand.add_card(six);
+    pHand.add_card(nine);
+    assert(p->draw(ace, pHand));
+    assert(p->draw(nine, pHand));
+    assert(!p->draw(two, pHand));
+    assert(!p->draw(six, pHand));
+    assert(p->draw(seven, pHand));
+
+    pHand.discard_all();
+    pHand.add_card(ace);
+    pHand.add_card(two);
+    pHand.add_card(ten); //value = 13, hand is hard
+    assert(p->draw(ace, pHand));
+    assert(!p->draw(two, pHand));
+    assert(!p->draw(five, pHand));
+    assert(!p->draw(six, pHand));
+    assert(p->draw(seven, pHand));
 
     // stand if value 17 or greater
-    pHand.add_card(two); // value now = 18
+    pHand.add_card(four); // value now = 18
     for (int i = 0; i < 52; i++)
     {
         assert(!p->draw(deck[i], pHand));
@@ -74,6 +95,15 @@ int main()
     pHand.add_card(nine);
     assert(!p->draw(nine, pHand));
 
+    pHand.discard_all();
+    pHand.add_card(ten);
+    pHand.add_card(ten);
+    pHand.add_card(ace); // value now 21
+    for (int i = 0; i < 52; i++)
+    {
+       assert(!p->draw(deck[i], pHand));
+    }
+
     // value = 12, only stands if dealer = 4,5,or 6
     pHand.discard_all();
     pHand.add_card(four); pHand.add_card(four); pHand.add_card(four);
@@ -82,7 +112,23 @@ int main()
     assert(!p->draw(six, pHand));
     assert(p->draw(two, pHand));
     assert(p->draw(nine, pHand));
-
+    pHand.discard_all();
+    pHand.add_card(ace);
+    pHand.add_card(ace); // value = 12, hand is soft
+    for (int i = 0; i < 52; i++)
+    {
+       assert(p->draw(deck[i], pHand));
+    }
+    pHand.add_card(ten); // value = 12, hand is hard
+    assert(!p->draw(four, pHand));
+    assert(!p->draw(five, pHand));
+    assert(!p->draw(six, pHand));
+    assert(p->draw(three, pHand));
+    assert(p->draw(seven, pHand));
+    assert(p->draw(ace, pHand));
+    assert(p->draw(two, pHand));
+    assert(p->draw(nine, pHand));
+ 
     return 0;
 
 }

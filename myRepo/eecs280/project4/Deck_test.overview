@@ -9,8 +9,11 @@ Deck_test04: Shuffle with a cut of 1 should flip the first two cards and
              keep the rest the same. 
 
 Deck_test05: Shuffle should "return" any dealt cards back to the deck before
-             and but should not reset the deck.
+             shuffling but should not reset the deck.
 
 Deck_test06: cards_remaining should return 52 when called on a newly created
              deck and should return 51 after dealing one card and should return
              0 after all cards have been dealt.
+
+Deck_test07: Deck constructor should make an order 2-A deck going Spades,
+             hearts, clubs, diamonds.

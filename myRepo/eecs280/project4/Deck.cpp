@@ -69,9 +69,8 @@ Card Deck::deal()
 int Deck::cards_remaining() const
 {
    if (next == 0) return 0;
-
    int cardsRemaining = 1;
-   for (Card* i = next; i != &deck[51]; i++)
+   for (const Card* i = next; i != &deck[51]; i++)
    {
       cardsRemaining++;
    }
