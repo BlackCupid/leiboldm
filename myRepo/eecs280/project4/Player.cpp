@@ -1,9 +1,13 @@
+#include <cassert>
+
+#define NDEBUG
 #include <iostream>
 #include "Player.h"
 #include "Card.h"
+#include "Deck.h"
 #include "Hand.h"
 #include <cstring>
-#include <cassert>
+
 
 using namespace std;
 
@@ -98,6 +102,8 @@ Counting_player::~Counting_player(){}
 /////////////////////////////// COMPETITOR ///////////////////////////////////
 class Competitor : public Player {
      int count;
+     int previousBet;
+     bool win;
    public:
       Competitor();
       int bet(unsigned int bankroll, unsigned int minimum);
@@ -112,29 +118,38 @@ Competitor::Competitor() : count(0) {}
 int Competitor::bet(unsigned int bankroll, unsigned int minimum)
 {
    assert(bankroll >= minimum);
-   if (count < 0) return minimum;
-   if (count == 0 || count == 1){
+   if (count < -1) return minimum;
+   if (count == -1 || count == 0 || count == 1){
       if (bankroll - minimum * 2 < minimum && bankroll >= minimum * 2){
          return bankroll - minimum;
-      } // he leaves enough in the bank to bet again next turn if he loses
+      }
       else if (bankroll > minimum * 2) return minimum * 2;
       else return bankroll;
    }
    else if (count == 2 || count == 3){
-      if (bankroll >= minimum * 3) return minimum * 3;
+      if (bankroll >= minimum * 20) return minimum * 20;
       else return bankroll;
    }
-   else{
-      if (bankroll >= (minimum * 4 + count)) return minimum * 4 + count;
+   else if (count == 4){
+      if (bankroll >= (minimum * 100)) return minimum * 100;
       else return bankroll;
    }
+   else if (count > 4){
+      if (bankroll >= (minimum * 5)) return minimum * 5;
+      else return bankroll;
+   }
+   else return minimum;
 }
 
 bool Competitor::draw(Card dealer, const Hand &player)
 {
    int handValue = player.hand_value();
    if (player.hand_is_soft()){
-      if (handValue <= 17) return true;
+      if (handValue < 17) return true;
+      else if (handValue == 17){
+         if (count > 3) return false;
+         else return true;
+      }
       else if (handValue == 18){
          if (dealer.get_rank() == Card::TWO ||
              dealer.get_rank() == Card::SEVEN ||
@@ -146,14 +161,24 @@ bool Competitor::draw(Card dealer, const Hand &player)
    else {
       if (handValue <= 11) return true;
       else if (handValue == 12){
-         if (count > 2) return false;
+         if ((dealer.get_rank() == Card::TEN ||
+             dealer.get_rank() == Card::JACK ||
+             dealer.get_rank() == Card::QUEEN ||
+             dealer.get_rank() == Card::KING ||
+             dealer.get_rank() == Card::NINE ||
+             dealer.get_rank() == Card::EIGHT) && count > 2) return true; 
+         else if (count > 2) return false;
          else if (dealer.get_rank() == Card::FOUR ||
              dealer.get_rank() == Card::FIVE ||
              dealer.get_rank() == Card::SIX) return false;
          else return true;
       }
-      else if (handValue >= 13 && handValue <= 16){
-         if (static_cast<int>(dealer.get_rank()) <= 4 || count > 0) return false;
+      else if (handValue == 13 || handValue == 14){
+         if (count > 0) return false;
+         else return true;
+      }
+      else if (handValue == 15 || handValue == 16){
+         if (count > -2) return false;
          else return true;
       }
       else return false;
@@ -164,7 +189,7 @@ void Competitor::expose(Card c)
 {
    int r = static_cast<int>(c.get_rank()); /// r = 0 = TWO, r = 1 = THREE, etc
    if (r < 5) count += 1;
-   else if (r > 7 && r != 12) count -= 1;
+   else if (r > 7) count -= 1;
 }
 
 void Competitor::shuffled()

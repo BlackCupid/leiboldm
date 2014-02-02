@@ -13,6 +13,7 @@ const unsigned int MAX_NAME_SIZE = 100;
 int main(int argc, char *argv[])
 {
    char errorMessage[] = "Usage: euchre PACK_FILENAME [shuffle|noshuffle] POINTS_TO_WIN NAME1 NAME2 NAME3 NAME4\n";
+
    if (argc != 8){
       cout << errorMessage;
       exit(EXIT_FAILURE);
@@ -39,7 +40,8 @@ int main(int argc, char *argv[])
    cout << endl;
 
    Game game1;
-   Game_init(&game1, argv[1], shuffle, points_to_win, const_cast<const char**>(&argv[4]));
+   Game_init(&game1, argv[1], shuffle, points_to_win,
+             const_cast<const char**>(&argv[4]));
    Game_play(&game1);
    
    return EXIT_SUCCESS;

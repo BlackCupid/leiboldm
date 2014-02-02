@@ -22,7 +22,7 @@ void Game_init(Game *game_ptr, const char *pack_filename,
    } 
 }
 
-// Function prototypes for functions used in Game_play()
+// Function prototypes for function used in Game_play()
 // RMEs located with function implementation
 static int Next_player(int player);
 static void Game_deal(Game *game_ptr, int dealer);
@@ -31,7 +31,8 @@ static void Game_play_trick(Game *game_ptr, int * lead_player, Suit trump,
                             int * hand_score);
 static int Find_winning_card(Card *lead, Card *c1, Card *c2, Card *c3,
                              Suit trump, const int * whose_card);
-static void Game_update_score(Game *game_ptr, int * hand_score, int maker);
+static void Game_update_score(Game *game_ptr, const int * hand_score,
+                               int maker);
 
 /* MODIFIES: stdout
  * EFFECTS: prints each players hand, used for debugging
@@ -61,7 +62,7 @@ void Game_play(Game *game_ptr)
         cout << "Hand " << hand << endl;
         cout << game_ptr->players[dealer].name << " deals\n";
 
-        int maker = 0;
+        int maker = 0; // player who makes trump
         Suit trump = Game_make_trump(game_ptr, dealer, &maker);
 
         // Play all tricks
@@ -69,7 +70,6 @@ void Game_play(Game *game_ptr)
         int leader = Next_player(dealer);
         for (int i = 0; i < MAX_HAND_SIZE; i++)
         {
-            //print_hands(game_ptr);
             Game_play_trick(game_ptr, &leader, trump, hand_score);
         }
 
@@ -128,7 +128,7 @@ static void Game_deal(Game *game_ptr, int dealer)
 }
 
 /* REQUIRES: dealer is between 0 and 3 inclusive
- * MODIFIES: game_ptr, stdout
+ * MODIFIES: game_ptr, stdout, maker
  * EFFECTS: Makes trump, returns it, and prints out all moves
  */
 static Suit Game_make_trump(Game *game_ptr, int dealer, int * maker)
@@ -180,8 +180,8 @@ static void Game_play_trick(Game *game_ptr, int * lead_player, Suit trump,
 {
    int player = *lead_player;
    int whose_card[4];
-   // whose_card[i] contains number of player that played ith card
-   // i.e: card[0] is the number of player who led
+   // whose_card[i] contains the number of the player who played the ith card
+   // i.e: whose_card[0] is the number of player who led
 
    Card lead = Player_lead_card(&game_ptr->players[player], trump);
    Card_print(&lead);
@@ -212,14 +212,15 @@ static void Game_play_trick(Game *game_ptr, int * lead_player, Suit trump,
    if (player % 2) *(hand_score + 1) += 1;
    else *hand_score += 1;
 }
-
-/* EFFECTS: Find the winning card and returns the number of the player
+/* REQUIRES: whose_card points to an array of integers between 0 and 3
+ * EFFECTS: Find the winning card and returns the number of the player
  *          who played that card
  */
 static int Find_winning_card(Card *lead, Card *c1, Card *c2, Card *c3,
                              Suit trump, const int * whose_card)
 {
-    int winner = 0;
+    int winner = 0;  // winner refers to the number of the winning card
+                     // i.e: winner is 1 if card c1 is the winner
     Card * cards[4] = {lead, c1, c2, c3};
     if (Card_compare(cards[0], c1, trump, lead->suit) < 0){
        winner = 1;
@@ -239,7 +240,7 @@ static int Find_winning_card(Card *lead, Card *c1, Card *c2, Card *c3,
  * MODIFIES: game_ptr, stdout
  * EFFECTS: determines winner of hand, updates and prints score
  */
-static void Game_update_score(Game *game_ptr, int * hand_score, int maker)
+static void Game_update_score(Game *game_ptr, const int * hand_score, int maker)
 {
    if (*hand_score > *(hand_score + 1)){ // if team 0 won the hand
       cout << game_ptr->players[0].name << " and "
@@ -260,7 +261,7 @@ static void Game_update_score(Game *game_ptr, int * hand_score, int maker)
       cout << game_ptr->players[1].name << " and "
            << game_ptr->players[3].name << " win the hand\n";
       if (maker % 2 == 1){
-         if (*(hand_score + 1) < 5)game_ptr->score[1] += 1;
+         if (*(hand_score + 1) < 5) game_ptr->score[1] += 1;
          else if (*(hand_score + 1) == 5) { // march
             game_ptr->score[1] += 2;
             cout << "march!\n";
@@ -271,6 +272,8 @@ static void Game_update_score(Game *game_ptr, int * hand_score, int maker)
          cout << "euchred!\n";
       }
    }
+
+   // print the game score
    cout << game_ptr->players[0].name << " and "
         << game_ptr->players[2].name << " have "
         << game_ptr->score[0] << " points\n";

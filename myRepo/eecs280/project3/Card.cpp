@@ -100,62 +100,58 @@ int Card_compare(const Card *a, const Card *b) {
 
 
 void Card_init(Card *card_ptr, const char* rank, const char* suit) {
-  assert(card_ptr);
-  Rank r;
-  Suit s;
+  Rank r = TWO; 
+  Suit s = HEARTS;
 
-  if (*rank == 'T' && *(rank + 1) == 'w') r = TWO;
-  else if (*rank == 'T' && *(rank + 1) == 'h') r = THREE;
-  else if (*rank == 'F' && *(rank + 1) == 'o') r = FOUR;
-  else if (*rank == 'F' && *(rank + 1) == 'i') r = FIVE;
-  else if (*rank == 'S' && *(rank + 1) == 'i') r = SIX;
-  else if (*rank == 'S' && *(rank + 1) == 'e') r = SEVEN;
-  else if (*rank == 'E') r = EIGHT;
-  else if (*rank == 'N') r = NINE;
-  else if (*rank == 'T' && *(rank + 1) == 'e') r = TEN;
-  else if (*rank == 'J') r = JACK;
-  else if (*rank == 'Q') r = QUEEN;
-  else if (*rank == 'K') r = KING;
-  else if (*rank == 'A') r = ACE;
-  else assert(0);
+  Rank ranks[RANK_NAMES_SIZE] = { TWO, THREE, FOUR, FIVE, SIX, SEVEN,
+                             EIGHT, NINE, TEN, JACK, QUEEN, KING, ACE };
+  bool rank_found = false;
+  for (int i = 0; i < RANK_NAMES_SIZE; i++){
+     if (!strcmp(rank, RANK_NAMES[i])){
+        r = ranks[i];
+        rank_found = true;
+     }
+  }
 
-  if (*suit == 'H') s = HEARTS;
-  else if (*suit == 'S') s = SPADES;
-  else if (*suit == 'D') s = DIAMONDS;
-  else if (*suit == 'C') s = CLUBS;
-  else assert(0);
-
+  Suit suits[SUIT_NAMES_SIZE] = { SPADES, HEARTS, CLUBS, DIAMONDS };
+  bool suit_found = false;
+  for (int i = 0; i < SUIT_NAMES_SIZE; i++){
+     if (!strcmp(suit, SUIT_NAMES[i])){
+        s = suits[i];
+        suit_found = true;
+     }
+  }
+  
+  assert(rank_found && suit_found);
   card_ptr->rank = r;
   card_ptr->suit = s;
 }
 
 
 int Card_compare(const Card *a, const Card *b, Suit trump) {
-  if (Card_is_right_bower(a, trump)) return 1;
+  if (a->suit == b->suit && a->rank == b->rank) return 0;
+  else if (Card_is_right_bower(a, trump)) return 1;
   else if (Card_is_right_bower(b, trump)) return -1;
   else if (Card_is_left_bower(a, trump)) return 1;
   else if (Card_is_left_bower(b, trump)) return -1;
   else if (Card_is_trump(a, trump) != Card_is_trump(b, trump))
   {
-     if (a->suit == trump) return 1;
-     else if (b->suit == trump) return -1;
+     if (Card_is_trump(a, trump)) return 1;
+     else if (Card_is_trump(b, trump)) return -1;
   }
   return Card_compare(a, b);
 }
 
 
 int Card_compare(const Card *a, const Card *b, Suit trump, Suit led) {
-  if (a->suit == trump && b->suit == trump)
+  if (Card_is_trump(a, trump) && Card_is_trump(b, trump))
   {
-     if (a->rank == JACK) return 1;
-     else if (b->rank == JACK) return -1;
-     else return Card_compare(a, b);
+     return Card_compare(a, b, trump);
   }
-  else if (a->suit == trump) return 1;
-  else if (b->suit == trump) return -1;
+  else if (Card_is_trump(a, trump)) return 1;
+  else if (Card_is_trump(b, trump)) return -1;
   else if (a->suit == led && b->suit == led) return Card_compare(a, b);
   else if (a->suit == led) return 1;
   else if (b->suit == led) return -1;
-  else if (Card_compare_suit(a, b->suit, trump) == 0) return Card_compare(a,b);
-  else return Card_compare_suit(a, b->suit, trump);
+  else return Card_compare(a, b);
 }

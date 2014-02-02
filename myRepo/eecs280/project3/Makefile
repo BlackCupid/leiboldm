@@ -24,6 +24,10 @@ test : Card_test Pack_test Player_test euchre
 	./euchre pack.in shuffle 10 Alice Bob Cathy Drew > euchre_test01.out
 	diff -q euchre_test01.out euchre_test01.out.correct
 
+mytest: mytest.cpp Game.cpp Game.h Pack.cpp Pack.h Player.cpp Player.h Card.cpp Card.h
+	g++ -pedantic -Wall -Werror -O1 test.cpp Game.cpp Player.cpp Pack.cpp Card.cpp -0 mytest
+	./mytest
+
 # type "make clean" to delete executables and temporary files
 clean :
 	rm -vf *.out euchre Card_test Pack_test Player_test

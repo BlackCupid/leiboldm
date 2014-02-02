@@ -9,7 +9,13 @@ using namespace std;
 
 void Player_init(Player *player_ptr, const char *name)
 {
-   strcpy((player_ptr->name), name);
+   if (static_cast<int>(strlen(name)) >= MAX_STR_LEN){
+      for (int i = 0; i < MAX_STR_LEN; i++){
+         *(player_ptr->name + i) = *(name + i);
+      }
+      *(player_ptr->name + MAX_STR_LEN - 1) = '\0';
+   }
+   else strcpy((player_ptr->name), name);
    player_ptr->hand_size = 0;
 }
 
@@ -76,8 +82,8 @@ Make_response Player_make_trump(const Player *player_ptr, const Card *upcard, Pl
       Suit nextSuit = Suit_next(upcard->suit);
       for (int i = 0; i < MAX_HAND_SIZE; i++)
       {
-         if (player_ptr->hand[i].suit == nextSuit 
-               && Card_is_face(&(player_ptr->hand[i])))
+         if (Card_is_trump(&player_ptr->hand[i], nextSuit)
+               && Card_is_face(&player_ptr->hand[i]))
          {
             resp.orderup = true;
             resp.trump = nextSuit;
@@ -125,20 +131,20 @@ static bool all_trump(Player *player_ptr, Suit trump)
 
 //REQUIRES: Hand has at least one card and no trump cards
 //EFFECTS: Returns the highest card in hand
-static Card find_high(Card *hand, int handSize)
+static Card find_high(const Card *hand, int handSize)
 {
-   Card * highCard = hand;
+   Card highCard = *hand;
    for (int i = 0; i < handSize; i++)
    {
-      if (Card_compare(highCard, hand + i) < 0) highCard = hand + i;
+      if (Card_compare(&highCard, hand + i) < 0) highCard = *(hand + i);
    }
-   return *highCard;
+   return highCard;
 }
 
 /* MODIFIES: player_ptr
- * EFFECTS: removes the card equal to card from player_ptr's hand
+ * EFFECTS: removes the Card equal to card from player_ptr's hand
  */
-static void Remove_card(Card * card, Player * player_ptr)
+static void Remove_card(const Card * card, Player * player_ptr)
 {
     for (int i = 0; i < player_ptr->hand_size; i++)
     {
@@ -146,8 +152,7 @@ static void Remove_card(Card * card, Player * player_ptr)
              card->rank == player_ptr->hand[i].rank){
           int k = i;
           while (k < player_ptr->hand_size - 1){
-             player_ptr->hand[k].rank = player_ptr->hand[k + 1].rank;
-             player_ptr->hand[k].suit = player_ptr->hand[k + 1].suit;
+             player_ptr->hand[k] = player_ptr->hand[k + 1];
              k++;
           }
           player_ptr->hand_size--;
