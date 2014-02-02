@@ -29,7 +29,7 @@ void Pack_init(Pack *pack_ptr, const char* pack_filename)
       char s[10];
       packfile.getline(r, 10, ' ');
       assert(r[0]);
-      packfile.getline(s, 10, ' ');
+      packfile.getline(s, 10, ' '); // takes in the "of" and throws it away
       packfile.getline(s, 10, '\n');
       Card_init(&(pack_ptr->cards[i]), r, s); 
    }
